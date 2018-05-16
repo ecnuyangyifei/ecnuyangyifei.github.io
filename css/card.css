@@ -1,0 +1,25 @@
+.card {
+    /* border: 1px solid red;  */
+    background: rgb(235, 243, 242);
+    color: rgb(10, 9, 9);
+    margin: 10px 10px;
+    padding: 10px 10px;
+    width: 300px;
+    height: 300px;
+    float: left;
+    text-align: center;
+}
+
+
+#tags li:hover {
+    background-color: #42785d;
+  }
+  
+#tags a {
+    color: black;
+    text-decoration: none;
+  }
+
+p {
+    word-break: break-all;   
+}
