@@ -1,0 +1,149 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+
+namespace TrickyFile
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //Console.WriteLine("Hello World!");
+            string path = CurrentPath;
+            //PackFiles(path, "pack.txt");
+            UnPackFile("pack.txt");
+            //foreach (var str in GetFileNames(path))
+            //{
+            //    Console.WriteLine(str);
+            //}
+            //Console.WriteLine(GetFileContent("TrickyFile.cs"));
+            Console.WriteLine("Press any key to exit.");
+            Console.ReadKey();
+        }
+
+        static readonly string START_FLAG = "**FILE START";
+        static readonly string END_FLAG = "FILE END**";
+
+
+        static void PackFiles(string path, string packFileName)
+        {
+            string[] fileNames = GetFileNames(path);
+            List<string> lines = new List<string>();
+            foreach (var fileName in fileNames)
+            {
+                lines.Add(START_FLAG);
+                lines.Add(fileName);
+                string content = GetFileContent(fileName);
+                lines.Add(content);
+                lines.Add(END_FLAG);
+            }
+            File.WriteAllLines(packFileName, lines.ToArray());
+        }
+
+        static void UnPackFile(string fileName)
+        {
+            string[] lines = File.ReadAllLines(fileName);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                //Console.WriteLine(line);
+                if (line.Equals(START_FLAG))
+                {
+                    //Console.WriteLine(line);
+
+                    int jump = 0;
+                    string name = lines[++i];
+                    jump++;
+                    i++;
+                    string content = "";
+                    while (!lines[i].Equals(END_FLAG))
+                    {
+                        content += lines[i] + "\r\n";
+                        jump++;
+                        i++;
+                    }
+                    //name = name.Replace("\\", "\\\\");
+                    Console.WriteLine(name);
+                    //if (!File.Exists(name))
+                    //{
+                    //    File.Create(name);
+                    //}
+                    Write2File(content, name);
+                }
+            }
+        }
+
+
+        static readonly string CurrentPath = Directory.GetCurrentDirectory();
+        static ISet<string> Filtered;
+        static Program()
+        {
+            HashSet<string> hashSet = new HashSet<string>();
+            Filtered = hashSet;
+            Filtered.Add("TrickyFile.exe");
+            Filtered.Add("TrickyFile.cs");
+            Filtered.Add("pack.txt");
+        }
+        static string[] GetFileNames(string path)
+        {
+            List<string> fileNames = new List<string>();
+            Queue<string> travel = new Queue<string>();
+            travel.Enqueue(path);
+            while (travel.Count > 0)
+            {
+                string temp = travel.Dequeue();
+                DirectoryInfo directoryInfo = new DirectoryInfo(temp);
+
+                foreach (var fileInfo in directoryInfo.GetFiles())
+                {
+                    if (Filtered.Contains(fileInfo.Name))
+                    {
+                        continue;
+                    }
+                    string name = fileInfo.FullName.Substring(CurrentPath.Length + 1);
+                    fileNames.Add(name);
+                }
+
+                foreach (var dirInfo in directoryInfo.GetDirectories())
+                {
+                    travel.Enqueue(dirInfo.FullName);
+                }
+            }
+            return fileNames.ToArray();
+        }
+
+        static string GetFileContent(string fileName)
+        {
+            try
+            {
+                using (StreamReader sr = new StreamReader(fileName))
+                {
+                    string content = sr.ReadToEnd();
+                    return content;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The file could not be read:");
+                Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
+        static void Write2File(string content, string name)
+        {
+            if (name.Contains("\\"))
+            {
+                Directory.CreateDirectory(name.Substring(0, name.LastIndexOf("\\")));
+            }
+            using (System.IO.StreamWriter file =
+            new System.IO.StreamWriter(name))
+            {
+                file.WriteLine(content);
+                file.Close();
+            }
+        }
+
+        
+    }
+}
