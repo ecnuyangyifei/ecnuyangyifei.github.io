@@ -1,4 +1,4 @@
-// javascript:const snippet = document.createElement('script');  
+// javascript:var snippet = document.createElement('script');  
 // snippet.src = 'https://ecnuyangyifei.github.io/res/js/timebar.js'; document.body.appendChild(snippet);
 
 function reminder() {
